@@ -42,7 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LexicalAnalysis\EndSelector.cs" />
     <Compile Include="LexicalAnalysis\IToken.cs" />
+    <Compile Include="LexicalAnalysis\Lexer.cs" />
     <Compile Include="LexicalAnalysis\Property.cs" />
     <Compile Include="LexicalAnalysis\Selector.cs" />
     <Compile Include="Program.cs" />
