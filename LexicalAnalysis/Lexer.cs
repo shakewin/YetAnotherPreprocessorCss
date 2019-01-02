@@ -9,7 +9,7 @@ namespace YetAnotherPreprocessorCss.LexicalAnalysis
 		private char peek = ' ';
 		private Dictionary<string, string> vars;
 		private Stack<string> selectors;
-		private int line = 0;
+		private int line = 1;
 		private StringBuilder strBuffer;
 
 		public Lexer()
@@ -19,7 +19,11 @@ namespace YetAnotherPreprocessorCss.LexicalAnalysis
 			strBuffer = new StringBuilder();
 		}
 
-		void ReadChr() => peek = Convert.ToChar(Console.Read());
+		void ReadChr()
+		{
+			peek = Convert.ToChar(Console.Read());
+			if (peek == ' ' || peek == '\t' || peek == '\r') ReadChr();
+		}
 		void AddVar(string nameVar, string valueVar) => vars.Add(nameVar, valueVar);
 
 		public IToken Scan()
@@ -27,8 +31,7 @@ namespace YetAnotherPreprocessorCss.LexicalAnalysis
 			ReadChr();
 			for (; ; ReadChr())
 			{
-				if (peek == ' ' || peek == '\t' || peek == '\r') continue;
-				else if (peek == '\n') line++;
+				if (peek == '\n') line++;
 				else break;
 			}
 
@@ -44,8 +47,7 @@ namespace YetAnotherPreprocessorCss.LexicalAnalysis
 				} while (Char.IsLetterOrDigit(peek));
 
 				string nameVar = strBuffer.ToString();
-
-				ReadChr();
+				
 				if (peek == ':')
 				{
 					ReadChr();
@@ -56,11 +58,12 @@ namespace YetAnotherPreprocessorCss.LexicalAnalysis
 						strBuffer.Append(peek);
 						ReadChr();
 					} while (peek != ';');
-
+					
 					string valueVar = strBuffer.ToString();
 
 					AddVar(nameVar, valueVar);
-									}
+					ReadChr();
+				}
 				else throw new Exception($"Syntax error on {line} line: the variable {nameVar} does not have a value");
 			}
 
