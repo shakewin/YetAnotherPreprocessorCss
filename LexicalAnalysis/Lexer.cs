@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace YetAnotherPreprocessorCss.LexicalAnalysis
@@ -11,18 +12,33 @@ namespace YetAnotherPreprocessorCss.LexicalAnalysis
 		private Stack<string> selectors;
 		private int line = 1;
 		private StringBuilder strBuffer;
+		StreamReader sr;
 
-		public Lexer()
+		public Lexer(string path)
 		{
 			vars = new Dictionary<string, string>();
 			selectors = new Stack<string>();
 			strBuffer = new StringBuilder();
+			sr = new StreamReader(path);
+		}
+
+		~Lexer()
+		{
+			if (sr != null)
+				sr.Close();
 		}
 
 		void ReadChr()
 		{
-			peek = Convert.ToChar(Console.Read());
-			if (peek == ' ' || peek == '\t' || peek == '\r') ReadChr();
+			try
+			{
+				peek = Convert.ToChar(sr.Read());
+				if (peek == ' ' || peek == '\t' || peek == '\r') ReadChr();
+			}
+			catch(OverflowException)
+			{
+				peek = ' ';
+			}
 		}
 		void AddVar(string nameVar, string valueVar) => vars.Add(nameVar, valueVar);
 
@@ -34,6 +50,8 @@ namespace YetAnotherPreprocessorCss.LexicalAnalysis
 				if (peek == '\n') line++;
 				else break;
 			}
+
+			if (peek == ' ') return new EOF();
 
 			if (peek == '$')
 			{
